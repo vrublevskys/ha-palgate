@@ -27,7 +27,7 @@ class PalgateApiClient:
         session: Optional[aiohttp.client.ClientSession] = None,
     ) -> None:
         """Initialize connection with Palgate."""
-        self.nativeLib = cdll.LoadLibrary('./palgate/libnative-lib.so')
+        self.nativeLib = cdll.LoadLibrary('./custom_components/palgate/libnative-lib.so')
 
         self._session = session
         self.device_id: str = device_id
