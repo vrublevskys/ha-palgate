@@ -9,7 +9,8 @@ from datetime import datetime, timedelta
 
 import aiohttp
 from voluptuous.error import Error
-from ctypes import cdll, c_byte
+
+from .lib_wrapper import LibWrapper
 
 from .const import (
     SECONDS_OPEN,
@@ -27,7 +28,7 @@ class PalgateApiClient:
         session: Optional[aiohttp.client.ClientSession] = None,
     ) -> None:
         """Initialize connection with Palgate."""
-        self.nativeLib = cdll.LoadLibrary('/homeassistant/custom_components/palgate/libnative-lib.so')
+        self.nativeLib = LibWrapper()
 
         self._session = session
         self.device_id: str = device_id
@@ -86,11 +87,12 @@ class PalgateApiClient:
             return await resp.json()
 
     def get_token(self) -> str:
-        self.nativeLib.Java_com_bluegate_shared_FaceDetectNative_getFacialLandmarks.argtypes = [ctypes.c_ubyte, ctypes.c_long, ctypes.c_long, ctypes.c_int]
+        # self.nativeLib.Java_com_bluegate_shared_FaceDetectNative_getFacialLandmarks.argtypes = [ctypes.c_ubyte, ctypes.c_long, ctypes.c_long, ctypes.c_int]
         ts = 1 + time.time()
         hexToken = self.hex_string_to_byte_array(self.token)
 
-        return self.int_to_hex_string(self.nativeLib.Java_com_bluegate_shared_FaceDetectNative_getFacialLandmarks(hexToken, ts, 375292753973, 1))
+        # return self.int_to_hex_string(self.nativeLib.Java_com_bluegate_shared_FaceDetectNative_getFacialLandmarks(hexToken, ts, 375292753973, 1))
+        return self.nativeLib.get_token(hexToken, ts, 375292753973, 1)
 
     def int_to_hex_string(self, i_arr) -> str:
         sb2 = []
